@@ -1,0 +1,155 @@
+@page "/catalog"
+@using BlazorShared.DTOs
+@inject HttpClient Http
+
+<PageTitle>Catalog - eShop Admin</PageTitle>
+
+<section class="esh-catalog-hero">
+    <div class="container">
+        <img class="esh-catalog-title" src="images/main_banner_text.png" alt="eShop Banner" />
+    </div>
+</section>
+
+<section class="esh-catalog-filters">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3">
+                <label class="esh-catalog-label" data-title="brand">
+                    <select @onchange="OnBrandFilterChanged" class="esh-catalog-filter">
+                        <option value="">All Brands</option>
+                        @if (catalogData?.Brands != null)
+                        {
+                            @foreach (var brand in catalogData.Brands)
+                            {
+                                <option value="@brand.Value" selected="@brand.Selected">@brand.Text</option>
+                            }
+                        }
+                    </select>
+                </label>
+            </div>
+            <div class="col-md-3">
+                <label class="esh-catalog-label" data-title="type">
+                    <select @onchange="OnTypeFilterChanged" class="esh-catalog-filter">
+                        <option value="">All Types</option>
+                        @if (catalogData?.Types != null)
+                        {
+                            @foreach (var type in catalogData.Types)
+                            {
+                                <option value="@type.Value" selected="@type.Selected">@type.Text</option>
+                            }
+                        }
+                    </select>
+                </label>
+            </div>
+            <div class="col-md-3">
+                <button @onclick="ApplyFilters" class="btn btn-primary">Apply Filters</button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    @if (catalogData?.CatalogItems != null && catalogData.CatalogItems.Any())
+    {
+        <Pagination PaginationInfo="catalogData.PaginationInfo" OnPageChanged="OnPageChanged" />
+
+        <div class="esh-catalog-items row">
+            @foreach (var catalogItem in catalogData.CatalogItems)
+            {
+                <div class="esh-catalog-item col-md-4">
+                    <CatalogItemComponent Item="catalogItem" />
+                </div>
+            }
+        </div>
+
+        <Pagination PaginationInfo="catalogData.PaginationInfo" OnPageChanged="OnPageChanged" />
+    }
+    else if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="esh-catalog-items row">
+            <div class="col-12 text-center">
+                <h3>THERE ARE NO RESULTS THAT MATCH YOUR SEARCH</h3>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private CatalogIndexDto? catalogData;
+    private bool isLoading = true;
+    private int? brandFilterApplied;
+    private int? typesFilterApplied;
+    private int currentPage = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCatalogData();
+    }
+
+    private async Task LoadCatalogData()
+    {
+        isLoading = true;
+        try
+        {
+            var url = $"api/catalog?page={currentPage}";
+            if (brandFilterApplied.HasValue)
+                url += $"&brandFilterApplied={brandFilterApplied}";
+            if (typesFilterApplied.HasValue)
+                url += $"&typesFilterApplied={typesFilterApplied}";
+
+            catalogData = await Http.GetFromJsonAsync<CatalogIndexDto>(url);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading catalog data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task OnBrandFilterChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var brandId))
+        {
+            brandFilterApplied = brandId == 0 ? null : brandId;
+        }
+        else
+        {
+            brandFilterApplied = null;
+        }
+    }
+
+    private async Task OnTypeFilterChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var typeId))
+        {
+            typesFilterApplied = typeId == 0 ? null : typeId;
+        }
+        else
+        {
+            typesFilterApplied = null;
+        }
+    }
+
+    private async Task ApplyFilters()
+    {
+        currentPage = 0;
+        await LoadCatalogData();
+    }
+
+    private async Task OnPageChanged(int newPage)
+    {
+        currentPage = newPage;
+        await LoadCatalogData();
+    }
+}

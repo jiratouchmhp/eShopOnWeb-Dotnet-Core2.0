@@ -1,0 +1,57 @@
+@using BlazorShared.DTOs
+
+@if (PaginationInfo != null)
+{
+    <nav class="esh-pager" aria-label="Page navigation">
+        <div class="esh-pager-item @(PaginationInfo.HasPrevious ? "" : "esh-pager-item--disabled")">
+            @if (PaginationInfo.HasPrevious)
+            {
+                <button @onclick="() => OnPageChangedCallback(PaginationInfo.ActualPage - 1)" 
+                        class="esh-pager-link">
+                    Previous
+                </button>
+            }
+            else
+            {
+                <span class="esh-pager-link">Previous</span>
+            }
+        </div>
+
+        <div class="esh-pager-items">
+            @for (int i = 0; i < PaginationInfo.TotalPages; i++)
+            {
+                var pageIndex = i;
+                <div class="esh-pager-item @(pageIndex == PaginationInfo.ActualPage ? "esh-pager-item--selected" : "")">
+                    <button @onclick="() => OnPageChangedCallback(pageIndex)" 
+                            class="esh-pager-link">
+                        @(pageIndex + 1)
+                    </button>
+                </div>
+            }
+        </div>
+
+        <div class="esh-pager-item @(PaginationInfo.HasNext ? "" : "esh-pager-item--disabled")">
+            @if (PaginationInfo.HasNext)
+            {
+                <button @onclick="() => OnPageChangedCallback(PaginationInfo.ActualPage + 1)" 
+                        class="esh-pager-link">
+                    Next
+                </button>
+            }
+            else
+            {
+                <span class="esh-pager-link">Next</span>
+            }
+        </div>
+    </nav>
+}
+
+@code {
+    [Parameter] public PaginationInfoDto? PaginationInfo { get; set; }
+    [Parameter] public EventCallback<int> OnPageChanged { get; set; }
+
+    private async Task OnPageChangedCallback(int newPage)
+    {
+        await OnPageChanged.InvokeAsync(newPage);
+    }
+}

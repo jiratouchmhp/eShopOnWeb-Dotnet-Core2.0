@@ -1,0 +1,43 @@
+﻿@page "/"
+@using BlazorShared.DTOs
+
+<PageTitle>Home - eShop Admin</PageTitle>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h1>Welcome to eShop Admin</h1>
+            <p class="lead">Manage your eShop catalog, orders, and more.</p>
+            
+            <div class="row mt-4">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Catalog Management</h5>
+                            <p class="card-text">Browse and manage product catalog items.</p>
+                            <a href="/catalog" class="btn btn-primary">View Catalog</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Order Management</h5>
+                            <p class="card-text">View and manage customer orders.</p>
+                            <a href="/orders" class="btn btn-primary">View Orders</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">Analytics</h5>
+                            <p class="card-text">View sales and performance analytics.</p>
+                            <a href="/analytics" class="btn btn-primary">View Analytics</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,32 @@
+@using BlazorShared.DTOs
+
+<div class="esh-catalog-item">
+    <form method="post">
+        <input type="hidden" name="id" value="@Item.Id" />
+        <input type="hidden" name="name" value="@Item.Name" />
+        <input type="hidden" name="price" value="@Item.Price" />
+        <input type="hidden" name="pictureUri" value="@Item.PictureUri" />
+
+        <figure class="esh-catalog-thumbnail">
+            <img class="esh-catalog-image" src="@Item.PictureUri" alt="@Item.Name" />
+        </figure>
+
+        <div class="esh-catalog-data">
+            <span class="esh-catalog-text">@Item.Name</span>
+            <span class="esh-catalog-price">$@Item.Price.ToString("F2")</span>
+            <button type="button" @onclick="() => AddToBasket(Item)" class="esh-catalog-button">
+                ADD TO BASKET
+            </button>
+        </div>
+    </form>
+</div>
+
+@code {
+    [Parameter] public CatalogItemDto Item { get; set; } = new();
+
+    private async Task AddToBasket(CatalogItemDto item)
+    {
+        // TODO: Implement add to basket functionality
+        Console.WriteLine($"Added {item.Name} to basket");
+    }
+}

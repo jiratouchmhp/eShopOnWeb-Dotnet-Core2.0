@@ -51,6 +51,9 @@ builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
 // Add MVC services
 builder.Services.AddControllersWithViews();
 
+// Add support for serving Blazor WebAssembly
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -70,5 +73,9 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Catalog}/{action=Index}/{id?}");
+
+// Map fallback to Blazor app for admin routes
+app.MapFallbackToFile("/admin/{*path:nonfile}", "index.html");
+app.MapRazorPages();
 
 app.Run();

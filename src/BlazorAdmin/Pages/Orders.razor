@@ -1,0 +1,79 @@
+@page "/orders"
+@using BlazorShared.DTOs
+@inject HttpClient Http
+
+<PageTitle>Orders - eShop Admin</PageTitle>
+
+<div class="container">
+    <h1>Order Management</h1>
+    
+    @if (orders != null && orders.Any())
+    {
+        <div class="row">
+            @foreach (var order in orders)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Order #@order.OrderNumber</h5>
+                            <span class="badge bg-primary">@order.Status</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Date:</strong> @order.OrderDate.ToString("MMM dd, yyyy")</p>
+                            <p><strong>Total:</strong> $@order.Total.ToString("F2")</p>
+                            @if (order.ShippingAddress != null)
+                            {
+                                <p><strong>Shipping:</strong> @order.ShippingAddress.Street, @order.ShippingAddress.City</p>
+                            }
+                            <p><strong>Items:</strong> @order.OrderItems.Count item(s)</p>
+                            <a href="/orders/@order.OrderNumber" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (isLoading)
+    {
+        <div class="text-center">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <h4>No Orders Found</h4>
+            <p>There are currently no orders in the system.</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<OrderDto>? orders;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        isLoading = true;
+        try
+        {
+            orders = await Http.GetFromJsonAsync<List<OrderDto>>("api/orders");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+            orders = new List<OrderDto>();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
