@@ -18,7 +18,7 @@
                 <div class="col-md-4">
                     <label class="esh-catalog-label" data-title="brand">
                         <InputSelect @bind-Value="filterModel.BrandFilterApplied" class="esh-catalog-filter">
-                            <option value="">All Brands</option>
+                            <option value="@(null)">All Brands</option>
                             @if (brands != null)
                             {
                                 @foreach (var brand in brands)
