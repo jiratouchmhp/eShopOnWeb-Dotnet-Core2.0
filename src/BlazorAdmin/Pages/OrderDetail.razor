@@ -1,0 +1,135 @@
+@page "/orders/{orderId:int}"
+@using BlazorShared.ViewModels
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Order Detail</PageTitle>
+
+<div class="esh-orders_detail">
+    <div class="container">
+        @if (isLoading)
+        {
+            <div class="text-center">
+                <p>Loading order details...</p>
+            </div>
+        }
+        else if (order != null)
+        {
+            <section class="esh-orders_detail-section">
+                <article class="esh-orders_detail-titles row">
+                    <section class="esh-orders_detail-title col-xs-3">Order number</section>
+                    <section class="esh-orders_detail-title col-xs-3">Date</section>
+                    <section class="esh-orders_detail-title col-xs-3">Total</section>
+                    <section class="esh-orders_detail-title col-xs-3">Status</section>
+                </article>
+
+                <article class="esh-orders_detail-items row">
+                    <section class="esh-orders_detail-item col-xs-3">@order.OrderNumber</section>
+                    <section class="esh-orders_detail-item col-xs-3">@order.OrderDate.ToString("yyyy-MM-dd")</section>
+                    <section class="esh-orders_detail-item col-xs-3">$@order.Total.ToString("F2")</section>
+                    <section class="esh-orders_detail-item col-xs-3">@order.Status</section>
+                </article>
+            </section>
+
+            <section class="esh-orders_detail-section">
+                <article class="esh-orders_detail-titles row">
+                    <section class="esh-orders_detail-title col-xs-12">Shipping Address</section>
+                </article>
+
+                <article class="esh-orders_detail-items row">
+                    <section class="esh-orders_detail-item col-xs-12">@order.ShippingAddress?.Street</section>
+                </article>
+
+                <article class="esh-orders_detail-items row">
+                    <section class="esh-orders_detail-item col-xs-12">@order.ShippingAddress?.City</section>
+                </article>
+            </section>
+
+            <section class="esh-orders_detail-section">
+                <article class="esh-orders_detail-titles row">
+                    <section class="esh-orders_detail-title col-xs-6">Product name</section>
+                    <section class="esh-orders_detail-title col-xs-1">Price</section>
+                    <section class="esh-orders_detail-title col-xs-1">Qty</section>
+                    <section class="esh-orders_detail-title col-xs-2">Total</section>
+                </article>
+
+                @if (order.OrderItems != null)
+                {
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <article class="esh-orders_detail-items row">
+                            <section class="esh-orders_detail-item esh-orders_detail-item--middle col-xs-6">@item.ProductName</section>
+                            <section class="esh-orders_detail-item esh-orders_detail-item--middle col-xs-1">$ @item.UnitPrice.ToString("F2")</section>
+                            <section class="esh-orders_detail-item esh-orders_detail-item--middle col-xs-1">@item.Units</section>
+                            <section class="esh-orders_detail-item esh-orders_detail-item--middle col-xs-2">$ @((item.Units * item.UnitPrice).ToString("F2"))</section>
+                        </article>
+                    }
+                }
+            </section>
+
+            <section class="esh-orders_detail-section esh-orders_detail-section--right">
+                <article class="esh-orders_detail-titles esh-basket-titles--clean row">
+                    <section class="esh-orders_detail-title col-xs-9"></section>
+                    <section class="esh-orders_detail-title col-xs-2">TOTAL</section>
+                </article>
+
+                <article class="esh-orders_detail-items row">
+                    <section class="esh-orders_detail-item col-xs-9"></section>
+                    <section class="esh-orders_detail-item esh-orders_detail-item--mark col-xs-2">$ @order.Total.ToString("F2")</section>
+                </article>
+            </section>
+
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button class="btn btn-secondary" @onclick="GoBackToOrders">
+                        Back to Orders
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="text-center">
+                <p>Order not found.</p>
+                <button class="btn btn-secondary" @onclick="GoBackToOrders">
+                    Back to Orders
+                </button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+    
+    private OrderViewModel? order;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrderDetail();
+    }
+
+    private async Task LoadOrderDetail()
+    {
+        try
+        {
+            isLoading = true;
+            order = await Http.GetFromJsonAsync<OrderViewModel>($"api/order/{OrderId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading order detail: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void GoBackToOrders()
+    {
+        Navigation.NavigateTo("/orders");
+    }
+}

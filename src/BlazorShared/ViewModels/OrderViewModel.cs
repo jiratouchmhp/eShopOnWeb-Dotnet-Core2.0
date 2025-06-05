@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Microsoft.eShopWeb.ViewModels
+namespace BlazorShared.ViewModels
 {
 
     public class OrderViewModel

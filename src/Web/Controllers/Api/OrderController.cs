@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using BlazorShared.ViewModels;
@@ -7,20 +7,24 @@ using ApplicationCore.Entities.OrderAggregate;
 using ApplicationCore.Interfaces;
 using System.Linq;
 using ApplicationCore.Specifications;
+using System.Collections.Generic;
 
-namespace Microsoft.eShopWeb.Controllers
+namespace Microsoft.eShopWeb.Controllers.Api
 {
     [Authorize]
-    [Route("[controller]/[action]")]
-    public class OrderController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
 
-        public OrderController(IOrderRepository orderRepository) {
+        public OrderController(IOrderRepository orderRepository) 
+        {
             _orderRepository = orderRepository;
         }
         
-        public async Task<IActionResult> Index()
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<OrderViewModel>>> GetOrders()
         {
             var orders = await _orderRepository.ListAsync(new CustomerOrdersWithItemsSpecification(User.Identity.Name));
 
@@ -41,15 +45,20 @@ namespace Microsoft.eShopWeb.Controllers
                     ShippingAddress = o.ShipToAddress,
                     Status = "Pending",
                     Total = o.Total()
-
                 });
-            return View(viewModel);
+            
+            return Ok(viewModel);
         }
 
         [HttpGet("{orderId}")]
-        public async Task<IActionResult> Detail(int orderId)
+        public async Task<ActionResult<OrderViewModel>> GetOrderDetail(int orderId)
         {
             var order = await _orderRepository.GetByIdWithItemsAsync(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
             var viewModel = new OrderViewModel()
             {
                 OrderDate = order.OrderDate,
@@ -67,30 +76,8 @@ namespace Microsoft.eShopWeb.Controllers
                 Status = "Pending",
                 Total = order.Total()
             };
-            return View(viewModel);
-        }
-
-        private OrderViewModel GetOrder()
-        {
-            var order = new OrderViewModel()
-            {
-                OrderDate = DateTimeOffset.Now.AddDays(-1),
-                OrderNumber = 12354,
-                Status = "Submitted",
-                Total = 123.45m,
-                ShippingAddress = new Address("123 Main St.", "Kent", "OH", "United States", "44240")
-            };
-
-            order.OrderItems.Add(new OrderItemViewModel()
-            {
-                ProductId = 1,
-                PictureUrl = "",
-                ProductName = "Something",
-                UnitPrice = 5.05m,
-                Units = 2
-            });
-
-            return order;
+            
+            return Ok(viewModel);
         }
     }
 }

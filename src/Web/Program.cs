@@ -62,6 +62,9 @@ builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
 // Configure MVC with endpoint routing enabled
 builder.Services.AddControllersWithViews();
 
+// Add Blazor WebAssembly hosting
+builder.Services.AddRazorPages();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -76,6 +79,17 @@ else
 
 app.UseStaticFiles();
 app.UseAuthentication();
-app.UseMvc();
+
+// Configure Blazor and fallback routing
+app.UseBlazorFrameworkFiles();
+app.UseRouting();
+
+app.MapRazorPages();
+app.MapControllers();
+
+// Redirect root to Blazor admin
+app.MapGet("/", () => Results.Redirect("/catalog"));
+
+app.MapFallbackToFile("index.html");
 
 app.Run("http://0.0.0.0:5106");

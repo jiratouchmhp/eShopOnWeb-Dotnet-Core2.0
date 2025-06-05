@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Microsoft.eShopWeb.ViewModels
+namespace BlazorShared.ViewModels
 {
     public class RegisterViewModel
     {

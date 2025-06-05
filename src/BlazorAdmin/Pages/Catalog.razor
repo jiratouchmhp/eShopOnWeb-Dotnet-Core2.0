@@ -1,0 +1,160 @@
+@page "/catalog"
+@using BlazorShared.ViewModels
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<PageTitle>Catalog</PageTitle>
+
+<section class="esh-catalog-hero">
+    <div class="container">
+        <img class="esh-catalog-title" src="../images/main_banner_text.png" alt="Catalog banner text" />
+    </div>
+</section>
+
+<section class="esh-catalog-filters">
+    <div class="container">
+        <EditForm Model="@filterModel" OnValidSubmit="@OnFilterSubmit">
+            <div class="row">
+                <div class="col-md-4">
+                    <label class="esh-catalog-label" data-title="brand">
+                        <InputSelect @bind-Value="filterModel.BrandFilterApplied" class="esh-catalog-filter">
+                            <option value="@(null)">All Brands</option>
+                            @if (brands != null)
+                            {
+                                @foreach (var brand in brands)
+                                {
+                                    <option value="@brand.Value">@brand.Text</option>
+                                }
+                            }
+                        </InputSelect>
+                    </label>
+                </div>
+                <div class="col-md-4">
+                    <label class="esh-catalog-label" data-title="type">
+                        <InputSelect @bind-Value="filterModel.TypesFilterApplied" class="esh-catalog-filter">
+                            <option value="">All Types</option>
+                            @if (types != null)
+                            {
+                                @foreach (var type in types)
+                                {
+                                    <option value="@type.Value">@type.Text</option>
+                                }
+                            }
+                        </InputSelect>
+                    </label>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+</section>
+
+<div class="container">
+    @if (catalogItems != null && catalogItems.Any())
+    {
+        <div class="esh-catalog-items row">
+            @foreach (var catalogItem in catalogItems)
+            {
+                <div class="esh-catalog-item col-md-4">
+                    <div class="card">
+                        <img src="@catalogItem.PictureUri" class="card-img-top" alt="@catalogItem.Name">
+                        <div class="card-body">
+                            <h5 class="card-title">@catalogItem.Name</h5>
+                            <p class="card-text">$@catalogItem.Price.ToString("F2")</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else if (isLoading)
+    {
+        <div class="text-center">
+            <p>Loading catalog items...</p>
+        </div>
+    }
+    else
+    {
+        <div class="esh-catalog-items row">
+            <div class="col-12">
+                <p>THERE ARE NO RESULTS THAT MATCH YOUR SEARCH</p>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private CatalogIndexViewModel? catalogModel;
+    private IEnumerable<CatalogItemViewModel>? catalogItems;
+    private IEnumerable<BlazorShared.Models.SelectListItem>? brands;
+    private IEnumerable<BlazorShared.Models.SelectListItem>? types;
+    private bool isLoading = true;
+    
+    private FilterModel filterModel = new FilterModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCatalogData();
+        await LoadBrands();
+        await LoadTypes();
+    }
+
+    private async Task LoadCatalogData()
+    {
+        try
+        {
+            isLoading = true;
+            var response = await Http.GetAsync($"api/catalog?brandFilterApplied={filterModel.BrandFilterApplied}&typesFilterApplied={filterModel.TypesFilterApplied}&page=0");
+            if (response.IsSuccessStatusCode)
+            {
+                catalogModel = await response.Content.ReadFromJsonAsync<CatalogIndexViewModel>();
+                catalogItems = catalogModel?.CatalogItems;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading catalog: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadBrands()
+    {
+        try
+        {
+            brands = await Http.GetFromJsonAsync<IEnumerable<BlazorShared.Models.SelectListItem>>("api/catalog/brands");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading brands: {ex.Message}");
+        }
+    }
+
+    private async Task LoadTypes()
+    {
+        try
+        {
+            types = await Http.GetFromJsonAsync<IEnumerable<BlazorShared.Models.SelectListItem>>("api/catalog/types");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading types: {ex.Message}");
+        }
+    }
+
+    private async Task OnFilterSubmit()
+    {
+        await LoadCatalogData();
+    }
+
+    public class FilterModel
+    {
+        public int? BrandFilterApplied { get; set; }
+        public int? TypesFilterApplied { get; set; }
+    }
+}

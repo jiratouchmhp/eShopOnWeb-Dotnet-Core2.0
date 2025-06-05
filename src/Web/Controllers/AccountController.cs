@@ -1,4 +1,4 @@
-﻿using Microsoft.eShopWeb.ViewModels;
+﻿using BlazorShared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
@@ -78,7 +78,7 @@ namespace Microsoft.eShopWeb.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            return RedirectToAction(nameof(CatalogController.Index), "Catalog");
+            return Redirect("/catalog");
         }
 
         [AllowAnonymous]
@@ -115,7 +115,7 @@ namespace Microsoft.eShopWeb.Controllers
             }
             else
             {
-                return RedirectToAction(nameof(CatalogController.Index), "Catalog");
+                return Redirect("/catalog");
             }
         }
 

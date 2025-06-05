@@ -1,4 +1,4 @@
-﻿namespace Microsoft.eShopWeb.ViewModels
+﻿namespace BlazorShared.ViewModels
 {
     public class BasketComponentViewModel
     {

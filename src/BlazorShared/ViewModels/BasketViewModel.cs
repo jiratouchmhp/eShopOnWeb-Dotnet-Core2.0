@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Microsoft.eShopWeb.ViewModels
+namespace BlazorShared.ViewModels
 {
 
     public class BasketViewModel

@@ -1,7 +1,7 @@
-﻿using Microsoft.eShopWeb.ApplicationCore.Entities;
+﻿using ApplicationCore.Entities;
 using System.Collections.Generic;
 
-namespace Microsoft.eShopWeb.ViewModels
+namespace BlazorShared.ViewModels
 {
 
     public class CatalogItemViewModel

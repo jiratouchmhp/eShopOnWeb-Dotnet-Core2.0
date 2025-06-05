@@ -3,7 +3,7 @@ using Infrastructure.Identity;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.eShopWeb.ViewModels;
+using BlazorShared.ViewModels;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

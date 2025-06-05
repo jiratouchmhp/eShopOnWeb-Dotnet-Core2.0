@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.eShopWeb.ViewModels;
+﻿using BlazorShared.Models;
+using BlazorShared.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

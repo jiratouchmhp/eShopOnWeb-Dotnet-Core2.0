@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Microsoft.eShopWeb.ApplicationCore.Entities;
 using System.Linq;
-using Microsoft.eShopWeb.ViewModels;
+using BlazorShared.ViewModels;
 using System.Collections.Generic;
 using ApplicationCore.Specifications;
 

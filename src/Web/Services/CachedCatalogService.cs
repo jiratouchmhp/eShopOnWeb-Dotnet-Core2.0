@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.eShopWeb.ViewModels;
+using BlazorShared.Models;
+using BlazorShared.ViewModels;
 using Microsoft.Extensions.Caching.Memory;
 using System;
 
