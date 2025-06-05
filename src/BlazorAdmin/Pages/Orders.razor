@@ -1,0 +1,97 @@
+@page "/orders"
+@using BlazorShared.ViewModels
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>My Order History</PageTitle>
+
+<div class="esh-orders">
+    <div class="container">
+        <h1>My Order History</h1>
+        
+        @if (isLoading)
+        {
+            <div class="text-center">
+                <p>Loading orders...</p>
+            </div>
+        }
+        else if (orders != null && orders.Any())
+        {
+            <article class="esh-orders-titles row">
+                <section class="esh-orders-title col-xs-2">Order number</section>
+                <section class="esh-orders-title col-xs-4">Date</section>
+                <section class="esh-orders-title col-xs-2">Total</section>
+                <section class="esh-orders-title col-xs-2">Status</section>
+                <section class="esh-orders-title col-xs-2"></section>
+            </article>
+            
+            @foreach (var order in orders)
+            {
+                <article class="esh-orders-items row">
+                    <section class="esh-orders-item col-xs-2">@order.OrderNumber</section>
+                    <section class="esh-orders-item col-xs-4">@order.OrderDate.ToString("yyyy-MM-dd")</section>
+                    <section class="esh-orders-item col-xs-2">$ @order.Total.ToString("F2")</section>
+                    <section class="esh-orders-item col-xs-2">@order.Status</section>
+                    <section class="esh-orders-item col-xs-1">
+                        <button class="btn btn-link esh-orders-link" @onclick="() => ViewOrderDetail(order.OrderNumber)">
+                            Detail
+                        </button>
+                    </section>
+                    <section class="esh-orders-item col-xs-1">
+                        @if (order.Status.ToLower() == "submitted")
+                        {
+                            <button class="btn btn-link esh-orders-link" @onclick="() => CancelOrder(order.OrderNumber)">
+                                Cancel
+                            </button>
+                        }
+                    </section>
+                </article>
+            }
+        }
+        else
+        {
+            <div class="text-center">
+                <p>No orders found.</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private IEnumerable<OrderViewModel>? orders;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        try
+        {
+            isLoading = true;
+            orders = await Http.GetFromJsonAsync<IEnumerable<OrderViewModel>>("api/order");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading orders: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ViewOrderDetail(int orderNumber)
+    {
+        Navigation.NavigateTo($"/orders/{orderNumber}");
+    }
+
+    private async Task CancelOrder(int orderNumber)
+    {
+        // TODO: Implement order cancellation
+        Console.WriteLine($"Cancel order {orderNumber}");
+    }
+}
