@@ -74,7 +74,7 @@ namespace Microsoft.eShopWeb.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> SignOut()
+        public new async Task<ActionResult> SignOut()
         {
             await _signInManager.SignOutAsync();
 
