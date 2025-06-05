@@ -1,4 +1,4 @@
-﻿using Microsoft.eShopWeb.ViewModels;
+﻿using BlazorShared.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;

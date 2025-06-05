@@ -1,4 +1,4 @@
-﻿using Microsoft.eShopWeb.ViewModels;
+﻿using BlazorShared.ViewModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
