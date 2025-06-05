@@ -58,11 +58,8 @@ builder.Services.AddSingleton<IUriComposer>(new UriComposer(builder.Configuratio
 
 builder.Services.AddScoped(typeof(IAppLogger<>), typeof(LoggerAdapter<>));
 
-// Configure MVC with endpoint routing disabled for compatibility
-builder.Services.AddMvc(options =>
-{
-    options.EnableEndpointRouting = false;
-});
+// Configure MVC with endpoint routing enabled
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
