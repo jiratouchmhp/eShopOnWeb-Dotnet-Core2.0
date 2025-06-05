@@ -21,7 +21,7 @@ namespace FunctionalTests.Web.Controllers
 
         protected HttpClient GetClient()
         {
-            var startupAssembly = typeof(CatalogController).GetTypeInfo().Assembly;
+            var startupAssembly = typeof(AccountController).GetTypeInfo().Assembly;
             _contentRoot = GetProjectPath("src", startupAssembly);
             
             // For now, we'll skip the functional tests since they require more complex migration
