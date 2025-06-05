@@ -76,7 +76,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading orders: {ex.Message}");
+            Logger.LogError(ex, "Error loading orders");
         }
         finally
         {
