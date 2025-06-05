@@ -23,7 +23,8 @@ builder.Services.AddDbContext<CatalogContext>(options =>
     }
     catch (Exception ex)
     {
-        var message = ex.Message;
+        Console.WriteLine($"An error occurred while configuring the in-memory database: {ex.Message}");
+        throw;
     }
 });
 
